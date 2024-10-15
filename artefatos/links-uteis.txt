@@ -1,0 +1,8 @@
+Cronograma:
+https://docs.google.com/spreadsheets/d/1ZB-NnlSzfGB1AKARYseC4SnHPf83EXlNDEmtliX9pCE/edit?usp=sharing
+
+Mapa de navegação:
+https://www.figma.com/design/mTS9Qwg0S9ptNX1BCJcCn7/edupass---mapa-navega%C3%A7%C3%A3o?node-id=0-1&t=pdU2KtNYUbTwYcAL-1
+
+Diagrama de classes:
+https://drive.google.com/file/d/1h62RqP6LF_3Tczk88TUHFNfIuMLGsGJ1/view?usp=sharing
