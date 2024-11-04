@@ -22,11 +22,17 @@ class ProfilePage(ft.UserControl):
                 ft.Text(f"E-mail: {student_info[2]}"),
                 ft.Text(f"Celular: {student_info[3]}"),
                 ft.ElevatedButton("Ver Carteirinha Digital", on_click=self.go_to_digital_card),
+                # ft.ElevatedButton("Verificar Documentos", on_click=self.verify_documents),
                 ft.ElevatedButton("Sair", on_click=self.logout),
             ],
             alignment="center",
             horizontal_alignment="center"
         )
+
+    # def verify_documents(self, e):
+    #     # Simulação de verificação de documentos
+    #     self.message.value = "Documentos enviados para verificação."
+    #     self.update()
 
     def go_to_digital_card(self, e):
         self.page.controls.clear()

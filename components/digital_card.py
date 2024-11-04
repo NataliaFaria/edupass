@@ -1,6 +1,4 @@
-# components/digital_card.py
-
-import flet as ft
+import flet as ft  # Certifique-se de que esta linha está presente
 from database import Database
 
 class DigitalCard(ft.UserControl):
@@ -36,5 +34,5 @@ class DigitalCard(ft.UserControl):
     def logout(self, e):
         from pages.login_page import LoginPage  # Importação atrasada
         self.page.controls.clear()
-        self.page.add(LoginPage(self.page, self.on_login_success, self.go_to_register_page))
+        self.page.add(LoginPage(self.page, on_login_success, go_to_register_page))
         self.page.update()

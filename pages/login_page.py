@@ -2,6 +2,7 @@
 
 import flet as ft
 from database import Database
+from pages.institution_register_page import InstitutionRegisterPage
 
 class LoginPage(ft.UserControl):
     def __init__(self, page, on_login_success, go_to_register_page):
@@ -22,6 +23,11 @@ class LoginPage(ft.UserControl):
             self.message.value = "Email ou senha incorretos!"
         self.update()
 
+    def go_to_institution_register_page(self, e):
+        self.page.controls.clear()
+        self.page.add(InstitutionRegisterPage(self.page, self.go_to_register_page))  # Redireciona para a página de registro de instituições
+        self.page.update()
+
     def build(self):
         self.email_field = ft.TextField(label="E-mail", width=300)
         self.password_field = ft.TextField(label="Senha", password=True, width=300)
@@ -34,6 +40,7 @@ class LoginPage(ft.UserControl):
                 self.password_field,
                 ft.ElevatedButton("Login", on_click=self.login),
                 self.message,
+                ft.TextButton("Registrar Instituição", on_click=self.go_to_institution_register_page),
                 ft.TextButton("Não tem conta? Cadastre-se", on_click=lambda _: self.go_to_register_page())
             ],
             alignment="center",
