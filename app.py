@@ -1,33 +1,43 @@
-# app.py
-
 import flet as ft
-from pages.login_page import LoginPage
-from pages.register_page import RegisterPage
-from pages.profile_page import ProfilePage
-from database import Database
+from institution_login import institution_login_page
+from student_login import student_login_page
+from institution_registration import institution_registration_page
+from student_registration import student_registration_page
 
 def main(page: ft.Page):
-    page.title = "EduPass - Carteira Escolar"
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    page.title = "EduPass"
 
-    db = Database()
+    # Configurando as rotas
+    def route_change(e):
+        if e.route == "/":
+            initial_page()
+        elif e.route == "/institution_login":
+            institution_login_page(page)
+        elif e.route == "/student_login":
+            student_login_page(page)
+        elif e.route == "/institution_registration":
+            institution_registration_page(page)
+        elif e.route == "/student_registration":
+            student_registration_page(page)
 
-    def go_to_login_page():
-        page.controls.clear()
-        page.add(LoginPage(page, on_login_success, go_to_register_page))
-        page.update()
+    page.on_route_change = route_change
 
-    def go_to_register_page():
-        page.controls.clear()
-        page.add(RegisterPage(page, go_to_login_page))
-        page.update()
+    # Página inicial
+    def initial_page():
+        page.clean()
+        page.add(
+            ft.Column(
+                controls=[
+                    ft.Text("Bem-vindo ao EduPass!", size=30),
+                    ft.ElevatedButton("Sou instituição", on_click=lambda e: page.go("/institution_login")),
+                    ft.ElevatedButton("Sou aluno", on_click=lambda e: page.go("/student_login")),
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                spacing=20,
+            )
+        )
 
-    def on_login_success(user_id):
-        page.controls.clear()
-        page.add(ProfilePage(page, user_id))  # Carrega a ProfilePage após o login
-        page.update()
+    initial_page()
 
-    go_to_login_page()
-
+# Executando o aplicativo
 ft.app(target=main)
