@@ -3,6 +3,7 @@
 import flet as ft
 from pages.login_page import LoginPage
 from pages.register_page import RegisterPage
+from pages.profile_page import ProfilePage
 from database import Database
 
 def main(page: ft.Page):
@@ -24,11 +25,9 @@ def main(page: ft.Page):
 
     def on_login_success(user_id):
         page.controls.clear()
-        student_info = db.get_student_info(user_id)
-        page.add(ft.Text(f"Bem-vindo, {student_info[0]}!", size=24))
+        page.add(ProfilePage(page, user_id))  # Carrega a ProfilePage após o login
         page.update()
 
-    # Inicializa na página de login
     go_to_login_page()
 
 ft.app(target=main)
