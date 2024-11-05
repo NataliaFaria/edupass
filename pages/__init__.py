@@ -1,0 +1,5 @@
+from .institution_login import InstitutionLoginPage
+from .institution_registration import InstitutionRegistrationPage
+from .student_login import StudentLoginPage
+from .student_registration import StudentRegistrationPage
+from .dashboard import DashboardPage

@@ -1,43 +1,59 @@
 import flet as ft
-from institution_login import institution_login_page
-from student_login import student_login_page
-from institution_registration import institution_registration_page
-from student_registration import student_registration_page
+from pages.institution_login import InstitutionLoginPage
+from pages.student_login import StudentLoginPage
+from pages.institution_registration import InstitutionRegistrationPage
+from pages.student_registration import StudentRegistrationPage
+from database import Database
 
-def main(page: ft.Page):
-    page.title = "EduPass"
+class EduPassApp:
+    def __init__(self, page: ft.Page):
+        self.page = page
+        self.page.title = "EduPass"
+        self.current_student_id = None  # Atributo para armazenar o ID do aluno logado
+        self.db = Database()  # Inicializa o banco de dados
+        self.initial_page()
 
-    # Configurando as rotas
-    def route_change(e):
+        # Configurando as rotas
+        self.page.on_route_change = self.route_change
+
+    def route_change(self, e):
         if e.route == "/":
-            initial_page()
+            self.initial_page()
         elif e.route == "/institution_login":
-            institution_login_page(page)
+            InstitutionLoginPage(self.page)
         elif e.route == "/student_login":
-            student_login_page(page)
+            StudentLoginPage(self.page, on_login=self.handle_student_login)  # Passa a função de login
         elif e.route == "/institution_registration":
-            institution_registration_page(page)
+            InstitutionRegistrationPage(self.page)
         elif e.route == "/student_registration":
-            student_registration_page(page)
+            StudentRegistrationPage(self.page)
 
-    page.on_route_change = route_change
+    def handle_student_login(self, email, password):
+        student = self.db.login_student(email, password)
+        if student:
+            self.current_student_id = student[0]  # Acesse o ID do aluno a partir da tupla
+            print(f"Login bem-sucedido! ID do aluno: {self.current_student_id}")  # Debug
+            return student  # Retorne o aluno
+        print("Login falhou!")  # Debug
+        return None  # Retorne None se falhar
 
-    # Página inicial
-    def initial_page():
-        page.clean()
-        page.add(
+
+    def initial_page(self):
+        self.page.clean()
+        self.page.add(
             ft.Column(
                 controls=[
                     ft.Text("Bem-vindo ao EduPass!", size=30),
-                    ft.ElevatedButton("Sou instituição", on_click=lambda e: page.go("/institution_login")),
-                    ft.ElevatedButton("Sou aluno", on_click=lambda e: page.go("/student_login")),
+                    ft.ElevatedButton("Sou instituição", on_click=lambda e: self.page.go("/institution_login")),
+                    ft.ElevatedButton("Sou aluno", on_click=lambda e: self.page.go("/student_login")),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 spacing=20,
             )
         )
 
-    initial_page()
+    def get_logged_student_id(self):
+        return self.current_student_id  # Retorna o ID do aluno logado
 
 # Executando o aplicativo
-ft.app(target=main)
+ft.app(target=EduPassApp)
