@@ -1,5 +1,6 @@
 import flet as ft
 from components.student_card import StudentCardPage
+from .course_registration import CourseRegistrationPage
 from database import Database
 
 class DashboardPage:
@@ -18,6 +19,8 @@ class DashboardPage:
                 controls=[
                     ft.Text("Bem-vindo ao painel da Instituição!", size=30),
                     ft.TextButton("Gerenciar Alunos", on_click=lambda e: self.page.add(ft.Text("Funcionalidade de Gerenciamento de Alunos"))),
+                    ft.TextButton("Cadastrar Curso", on_click=self.navigate_to_course_registration),  # Novo botão para registrar cursos
+                    ft.TextButton("Ver Cursos Cadastrados", on_click=self.show_courses),  # Novo botão para visualizar cursos
                     ft.TextButton("Visualizar Relatórios", on_click=lambda e: self.page.add(ft.Text("Funcionalidade de Relatórios"))),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
@@ -45,6 +48,14 @@ class DashboardPage:
                 spacing=20,
             )
         )
+    
+    def navigate_to_course_registration(self, e):
+        # Navegar para a página de registro de cursos
+        CourseRegistrationPage(self.page)
+
+    def show_courses(self, e):
+        # Simulação de visualização de cursos cadastrados
+        self.page.add(ft.Text("Lista de Cursos Cadastrados (Em desenvolvimento)"))
 
     def show_student_card(self, e):
         if self.student_id is not None:

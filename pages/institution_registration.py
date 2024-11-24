@@ -15,7 +15,7 @@ class InstitutionRegistrationPage:
         name_field = ft.TextField(label="Nome da Instituição")
         address_field = ft.TextField(label="Endereço")
         shift_field = ft.TextField(label="Turno (Ex: Matutino, Vespertino, Noturno)")
-        courses_field = ft.TextField(label="Cursos Ofertados (separados por vírgula)")
+        # courses_field = ft.TextField(label="Cursos Ofertados (separados por vírgula)")
         email_field = ft.TextField(label="Email")
         password_field = ft.TextField(label="Senha", password=True)
 
@@ -27,12 +27,12 @@ class InstitutionRegistrationPage:
             name = name_field.value
             address = address_field.value
             shift = shift_field.value
-            courses = courses_field.value
+            # courses = courses_field.value
             email = email_field.value
             password = password_field.value
             
             # Simulação de validação e cadastro
-            if self.database.register_institution(name, address, shift, courses, email, password):  # Passando todos os parâmetros necessários
+            if self.database.register_institution(name, address, shift, email, password):  # Passando todos os parâmetros necessários
                 self.page.go("/institution_login")  # Navegar para a página de login após cadastro
             else:
                 self.page.add(ft.Text("Email já cadastrado!", color=ft.colors.RED))
@@ -45,7 +45,7 @@ class InstitutionRegistrationPage:
                     name_field,
                     address_field,
                     shift_field,
-                    courses_field,
+                    # courses_field,
                     email_field,
                     password_field,
                     ft.ElevatedButton("Cadastrar", on_click=register),

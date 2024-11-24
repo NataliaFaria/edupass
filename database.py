@@ -16,9 +16,17 @@ class Database:
             name TEXT NOT NULL,
             address TEXT NOT NULL,
             shift TEXT NOT NULL,
-            courses TEXT NOT NULL,
             email TEXT NOT NULL UNIQUE,
             password TEXT NOT NULL
+        )''')
+
+        # Criar tabela de cursos
+        cursor.execute('''CREATE TABLE IF NOT EXISTS courses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            institution_id INTEGER,
+            duration TEXT NOT NULL, 
+            FOREIGN KEY (institution_id) REFERENCES institutions(id)
         )''')
 
         # Criar tabela de alunos
@@ -33,18 +41,27 @@ class Database:
             password TEXT NOT NULL
         )''')
 
+        # Tabela de relacionamento entre alunos e cursos
+        cursor.execute('''CREATE TABLE IF NOT EXISTS student_courses (
+            student_id INTEGER,
+            course_id INTEGER,
+            PRIMARY KEY (student_id, course_id),
+            FOREIGN KEY (student_id) REFERENCES students(id),
+            FOREIGN KEY (course_id) REFERENCES courses(id)
+        )''')
+
         connection.commit()
         connection.close()
 
-    def register_institution(self, name, address, shift, courses, email, password):
+    def register_institution(self, name, address, shift, email, password):
         """Registra uma nova instituição no banco de dados"""
         connection = sqlite3.connect(self.db_name)
         cursor = connection.cursor()
         try:
             cursor.execute(
-                '''INSERT INTO institutions (name, address, shift, courses, email, password) 
-                VALUES (?, ?, ?, ?, ?, ?)''',
-                (name, address, shift, courses, email, password)
+                '''INSERT INTO institutions (name, address, shift, email, password) 
+                VALUES (?, ?, ?, ?, ?)''',
+                (name, address, shift, email, password)
             )
             connection.commit()
             return True
@@ -52,6 +69,24 @@ class Database:
             return False
         finally:
             connection.close()
+
+    def register_course(self, name, institution_id, duration):
+        """Registra um curso de uma instituição"""
+        connection = sqlite3.connect(self.db_name)
+        cursor = connection.cursor()
+        try:
+            cursor.execute(
+                '''INSERT INTO courses (name, institution_id, duration) 
+                VALUES (?, ?, ?)''',  # Corrigido para incluir o campo 'duration'
+                (name, institution_id, duration)  # Passando todos os parâmetros
+            )
+            connection.commit()
+            return True
+        except sqlite3.IntegrityError:
+            return False
+        finally:
+            connection.close()
+
 
     def register_student(self, name, email, dob, cpf, phone, address, password):
         """Registra um novo aluno no banco de dados"""
@@ -70,6 +105,23 @@ class Database:
         finally:
             connection.close()
 
+    def register_student_in_course(self, student_id, course_id):
+        """Inscreve um aluno em um curso"""
+        connection = sqlite3.connect(self.db_name)
+        cursor = connection.cursor()
+        try:
+            cursor.execute(
+                '''INSERT INTO student_courses (student_id, course_id) 
+                VALUES (?, ?)''',
+                (student_id, course_id)
+            )
+            connection.commit()
+            return True
+        except sqlite3.IntegrityError:
+            return False
+        finally:
+            connection.close()
+
     def login_institution(self, email, password):
         """Verifica se o login da instituição é válido"""
         connection = sqlite3.connect(self.db_name)
@@ -77,7 +129,7 @@ class Database:
         cursor.execute('''SELECT password FROM institutions WHERE email = ?''', (email,))
         result = cursor.fetchone()
         connection.close()
-        if result and result[0] == password:  # Compara a senha diretamente
+        if result and result[0] == password:
             return True
         return False
 
@@ -86,11 +138,11 @@ class Database:
         connection = sqlite3.connect(self.db_name)
         cursor = connection.cursor()
         cursor.execute('''SELECT id, password FROM students WHERE email = ?''', (email,))
-        result = cursor.fetchone()  # Retorna a tupla (id, senha) ou None
+        result = cursor.fetchone()
         connection.close()
 
-        if result and result[1] == password:  # Compara a senha diretamente
-            return result  # Retorna a tupla (id, senha) do aluno
+        if result and result[1] == password:
+            return result
         return None
 
     def get_student_by_id(self, student_id):
@@ -98,11 +150,10 @@ class Database:
         connection = sqlite3.connect(self.db_name)
         cursor = connection.cursor()
         cursor.execute('''SELECT id, name, email, dob, cpf, phone, address FROM students WHERE id = ?''', (student_id,))
-        student_data = cursor.fetchone()  # Retorna uma tupla ou None
+        student_data = cursor.fetchone()
         connection.close()
 
         if student_data:
-            # Retorna os dados do aluno como um dicionário
             return {
                 'id': student_data[0],
                 'name': student_data[1],
