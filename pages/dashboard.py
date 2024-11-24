@@ -1,6 +1,6 @@
 import flet as ft
-from database import Database
 from components.student_card import StudentCardPage
+from database import Database
 
 class DashboardPage:
     def __init__(self, page: ft.Page, user_type: str, student_id: int = None):
@@ -48,6 +48,7 @@ class DashboardPage:
 
     def show_student_card(self, e):
         if self.student_id is not None:
-            StudentCardPage(self.page, self.student_id)
+            # Passa a instância de DashboardPage ao StudentCardPage
+            StudentCardPage(self.page, self.student_id, self)
         else:
             self.page.add(ft.Text("ID do aluno não disponível.", color="red"))
