@@ -2,6 +2,7 @@ import flet as ft
 from components.student_card import StudentCardPage
 from .course_registration import CourseRegistrationPage
 from .document_upload_page import DocumentUploadPage
+from .manage_student import ManageStudentsPage
 from database import Database
 
 class DashboardPage:
@@ -20,7 +21,7 @@ class DashboardPage:
             content = ft.Column(
                 controls=[
                     ft.Text("Bem-vindo ao painel da Instituição!", size=30),
-                    ft.TextButton("Gerenciar Alunos", on_click=lambda e: self.page.add(ft.Text("Funcionalidade de Gerenciamento de Alunos"))),
+                    ft.TextButton("Gerenciar Alunos", on_click=self.navigate_to_manage_student),
                     ft.TextButton("Cadastrar Curso", on_click=self.navigate_to_course_registration),  # Novo botão para registrar cursos
                     ft.TextButton("Ver Cursos Cadastrados", on_click=self.show_courses),  # Novo botão para visualizar cursos
                     ft.TextButton("Visualizar Relatórios", on_click=lambda e: self.page.add(ft.Text("Funcionalidade de Relatórios"))),
@@ -121,4 +122,7 @@ class DashboardPage:
 
     def navigate_to_document_upload(self, e):
         """Navega para a página de upload de documentos"""
-        DocumentUploadPage(self.page, self.student_id, self.institution_id)
+        DocumentUploadPage(self.page, self.student_id, self)
+
+    def navigate_to_manage_student(self, e):
+        ManageStudentsPage(self.page, self.institution_id, self)

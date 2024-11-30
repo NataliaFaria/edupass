@@ -61,6 +61,7 @@ class Database:
             file_path TEXT NOT NULL,
             description TEXT NOT NULL,
             upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            status TEXT DEFAULT 'Pendente',
             FOREIGN KEY (student_id) REFERENCES students(id),
             FOREIGN KEY (institution_id) REFERENCES institutions(id)
         )''')
@@ -262,6 +263,7 @@ class Database:
         return [{"id": institution[0], "name": institution[1]} for institution in institutions]
 
     def upload_document(self, student_id, institution_id, file_path, description):
+        print(institution_id)
         """Realiza o upload de um novo documento para o aluno"""
         connection = sqlite3.connect(self.db_name)
         cursor = connection.cursor()
@@ -287,3 +289,73 @@ class Database:
         documents = cursor.fetchall()
         connection.close()
         return documents
+    
+    def get_students_by_institution(self, institution_id):
+        """Retorna os alunos cadastrados em uma instituição e seus documentos."""
+        connection = sqlite3.connect(self.db_name)
+        cursor = connection.cursor()
+        cursor.execute(
+            '''
+            SELECT s.id, s.name, s.email, d.file_path, d.description, d.status
+            FROM students s
+            LEFT JOIN documents d ON s.id = d.student_id
+            WHERE s.institution_id = ?
+            ''', 
+            (institution_id,)
+        )
+        students = cursor.fetchall()
+        connection.close()
+        return [
+            {
+                "student_id": student[0],
+                "name": student[1],
+                "email": student[2],
+                "file_path": student[3],
+                "description": student[4],
+                "status": student[5]
+            }
+            for student in students
+        ]
+
+    def update_document_status(self, document_id, status):
+        """Atualiza o status de um documento."""
+        connection = sqlite3.connect(self.db_name)
+        cursor = connection.cursor()
+        cursor.execute(
+            '''
+            UPDATE documents
+            SET status = ?
+            WHERE id = ?
+            ''', 
+            (status, document_id)
+        )
+        connection.commit()
+        connection.close()
+        return cursor.rowcount > 0  # Retorna True se a atualização foi bem-sucedida
+    
+    def get_institution_id(self, student_id):
+        """Obtém o institution_id com base no student_id"""
+        connection = sqlite3.connect(self.db_name)
+        cursor = connection.cursor()
+
+        try:
+            cursor.execute('''SELECT institution_id FROM students WHERE id = ?''', (student_id,))
+            result = cursor.fetchone()
+            if result:
+                return result[0]
+            return None
+        except sqlite3.Error as e:
+            print(f"Erro ao buscar institution_id: {e}")
+            return None
+        finally:
+            connection.close()
+    
+    def get_documents_for_student(self, student_id):
+        """Recupera os documentos enviados para um aluno específico"""
+        connection = sqlite3.connect(self.db_name)
+        cursor = connection.cursor()
+        cursor.execute('''SELECT * FROM documents WHERE student_id = ?''', (student_id,))
+        documents = cursor.fetchall()
+        connection.close()
+        return documents
+

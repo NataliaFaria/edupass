@@ -4,10 +4,11 @@ from database import Database
 import shutil  # Para copiar o arquivo
 
 class DocumentUploadPage:
-    def __init__(self, page: ft.Page, student_id: int, institution_id: int):
+    def __init__(self, page: ft.Page, student_id: int, dashboard_page: object):
         self.page = page
         self.student_id = student_id
-        self.institution_id = institution_id
+        # self.institution_id = institution_id
+        self.dashboard = dashboard_page
         self.database = Database()
         self.create_upload_page()
 
@@ -48,9 +49,12 @@ class DocumentUploadPage:
             except Exception as e:
                 self.page.add(ft.Text(f"Erro ao salvar o arquivo: {str(e)}", color="red"))
                 return
+            
+            institution_id = self.database.get_institution_id(self.student_id)
+            print(institution_id)
 
             # Registrar o documento no banco de dados
-            if self.database.upload_document(self.student_id, self.institution_id, file_path, description_field.value):
+            if self.database.upload_document(self.student_id, institution_id, file_path, description_field.value):
                 self.page.add(ft.Text("Documento enviado com sucesso!", color="green"))
             else:
                 self.page.add(ft.Text("Erro ao enviar documento.", color="red"))
@@ -64,7 +68,7 @@ class DocumentUploadPage:
                     description_field,  # Campo de descrição
                     ft.ElevatedButton("Escolher Arquivo", on_click=lambda _: self.file_picker.pick_files()),
                     ft.ElevatedButton("Enviar Documento", on_click=upload_document),
-                    ft.TextButton("Voltar ao Painel", on_click=lambda e: self.page.go("/dashboard")),
+                    ft.TextButton("Voltar ao Painel", on_click=self.go_back),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 spacing=20,
@@ -73,6 +77,12 @@ class DocumentUploadPage:
 
         # Atualizar a página para garantir que todos os controles sejam renderizados
         self.page.update()
+
+    def go_back(self, e):
+        # Retorna ao painel de controle
+        self.dashboard.create_dashboard()  # Chama o método do DashboardPage
+        self.page.update()
+
 
     def handle_file_pick(self, e):
         """Função chamada após selecionar o arquivo"""

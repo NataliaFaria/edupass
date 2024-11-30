@@ -29,22 +29,22 @@ class StudentRegistrationPage:
         def load_institutions():
             """Carrega as instituições cadastradas ao iniciar"""
             institutions = self.database.get_all_institutions()
-            print(institutions)  # Verifique as instituições carregadas
+            # print(institutions)
             institution_dropdown.options = [ft.dropdown.Option(inst["id"], inst["name"]) for inst in institutions]
             institution_dropdown.update()
 
         def load_courses(e):
             """Atualiza os cursos disponíveis ao selecionar uma instituição"""
             institution_id = institution_dropdown.value
-            print(f"Instituição selecionada: {institution_id}")  # Verifique se a instituição foi selecionada corretamente
+            # print(f"Instituição selecionada: {institution_id}")
             if institution_id:
                 courses = self.database.get_courses_by_institution(institution_id)
-                print(f"Cursos encontrados: {courses}")  # Debug para verificar os cursos encontrados
+                # print(f"Cursos encontrados: {courses}")
                 if courses:
                     course_dropdown.options = [ft.dropdown.Option(course["id"], course["name"]) for course in courses]  # Corrigido: Usando o 'id' do curso
                     course_dropdown.update()
                 else:
-                    print("Nenhum curso encontrado para esta instituição.")
+                    # print("Nenhum curso encontrado para esta instituição.")
                     # Mostrar uma mensagem ou tomar alguma ação caso não existam cursos
                     course_dropdown.options = []  # Limpar os cursos se não encontrar nenhum
                     course_dropdown.update()
@@ -70,7 +70,7 @@ class StudentRegistrationPage:
 
             # Chamar o método de registro no banco de dados
             if self.database.register_student(name, email, dob, cpf, phone, address, password, institution_id, course_id):
-                print("Aluno registrado com sucesso!") 
+                # print("Aluno registrado com sucesso!") 
                 self.page.go("/student_login")
             else:
                 self.page.add(ft.Text("Email ou CPF já cadastrado!", color=ft.colors.RED))
