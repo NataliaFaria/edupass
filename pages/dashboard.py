@@ -1,6 +1,7 @@
 import flet as ft
 from components.student_card import StudentCardPage
 from .course_registration import CourseRegistrationPage
+from .document_upload_page import DocumentUploadPage
 from database import Database
 
 class DashboardPage:
@@ -32,7 +33,7 @@ class DashboardPage:
                 controls=[
                     ft.Text("Bem-vindo ao painel do Aluno!", size=30),
                     ft.TextButton("Meus Cursos", on_click=lambda e: self.page.add(ft.Text("Lista de Cursos Inscritos"))),
-                    ft.TextButton("Meu Progresso", on_click=lambda e: self.page.add(ft.Text("Progresso do Aluno"))),
+                    ft.TextButton("Adicionar documentos", on_click=self.navigate_to_document_upload),
                     ft.TextButton("Status", on_click=lambda e: self.page.add(ft.Text("Status"))),
                     ft.TextButton("Ver Minha Carteirinha", on_click=self.show_student_card),
                 ],
@@ -118,3 +119,6 @@ class DashboardPage:
         else:
             self.page.add(ft.Text("ID do aluno não disponível.", color="red"))
 
+    def navigate_to_document_upload(self, e):
+        """Navega para a página de upload de documentos"""
+        DocumentUploadPage(self.page, self.student_id, self.institution_id)

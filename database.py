@@ -54,6 +54,17 @@ class Database:
             FOREIGN KEY (course_id) REFERENCES courses(id)
         )''')
 
+        cursor.execute('''CREATE TABLE IF NOT EXISTS documents (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER,
+            institution_id INTEGER,
+            file_path TEXT NOT NULL,
+            description TEXT NOT NULL,
+            upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_id) REFERENCES students(id),
+            FOREIGN KEY (institution_id) REFERENCES institutions(id)
+        )''')
+
         connection.commit()
         connection.close()
 
@@ -250,3 +261,29 @@ class Database:
         connection.close()
         return [{"id": institution[0], "name": institution[1]} for institution in institutions]
 
+    def upload_document(self, student_id, institution_id, file_path, description):
+        """Realiza o upload de um novo documento para o aluno"""
+        connection = sqlite3.connect(self.db_name)
+        cursor = connection.cursor()
+        try:
+            cursor.execute(
+                '''INSERT INTO documents (student_id, institution_id, file_path, description) 
+                VALUES (?, ?, ?, ?)''',
+                (student_id, institution_id, file_path, description)
+            )
+            connection.commit()
+            return True
+        except sqlite3.IntegrityError as e:
+            print(f"Erro ao registrar documento: {e}")
+            return False
+        finally:
+            connection.close()
+
+    def get_documents_for_institution(self, institution_id):
+        """Recupera os documentos enviados para a instituição"""
+        connection = sqlite3.connect(self.db_name)
+        cursor = connection.cursor()
+        cursor.execute('''SELECT * FROM documents WHERE institution_id = ?''', (institution_id,))
+        documents = cursor.fetchall()
+        connection.close()
+        return documents
