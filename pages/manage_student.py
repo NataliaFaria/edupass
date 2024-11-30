@@ -32,13 +32,7 @@ class ManageStudentsPage:
         student_list = ft.ListView(
             controls=[
                 ft.Column(
-                    # ft.Row(
-                    #     leading=ft.Icon(ft.icons.PERSON),
-                    #     title=ft.Text(student["name"]),
-                    #     subtitle=ft.Text(f"E-mail: {student['email']}"),
-                    # ),
                     controls=[
-                        
                         ft.ListTile(
                             trailing=ft.Row(
                                 controls=[
@@ -52,9 +46,9 @@ class ManageStudentsPage:
                                             ft.dropdown.Option("Aprovado"),
                                             ft.dropdown.Option("Reprovado"),
                                         ],
-                                        value=student["status"],
-                                        on_change=lambda e, s_id=student["student_id"]: self.update_status(
-                                            s_id, e.control.value
+                                        value=self.get_document_status(student["student_id"]),
+                                        on_change=lambda e, student_id=student["student_id"]: self.update_status(
+                                            e.control.value, student_id
                                         ),
                                     ),
                                 ],
@@ -69,8 +63,6 @@ class ManageStudentsPage:
             spacing=10,
         )
 
-
-
         # Adicionar à página
         self.page.add(
             ft.Column(
@@ -83,6 +75,13 @@ class ManageStudentsPage:
                 spacing=20,
             )
         )
+
+    def get_document_status(self, student_id):
+        """Obtém o status do primeiro documento associado ao aluno"""
+        documents = self.database.get_documents_for_student(student_id)
+        if documents:
+            return documents[0][2]  # Assumindo que document[2] é o status
+        return None
 
     def download_document(self, student_id):
         """Lógica para baixar o documento do aluno específico"""
@@ -97,28 +96,23 @@ class ManageStudentsPage:
         else:
             self.page.add(ft.Text("Documento não encontrado.", color="red"))
 
-
-    def update_status(self, student_id, status):
-        """Atualiza o status do documento de um aluno"""
+    def update_status(self, status, student_id):
+        """Atualiza o status de um documento específico de um aluno"""
+        print(f"Tentando atualizar o status do aluno {student_id} para {status}...")  # Depuração
         documents = self.database.get_documents_for_student(student_id)
         if documents:
-            updated = False  # Variável para verificar se algum documento foi atualizado
+            updated = False  # Para garantir que ao menos um documento seja atualizado
             for document in documents:
-                # Aqui assumimos que cada documento tem um status que pode ser alterado
-                if document[1] != status:  # Verifica se o status foi alterado (document[1] seria o status atual)
-                    success = self.database.update_document_status(document[0], status)  # document[0] seria o ID do documento
+                print(f"Verificando documento {document[0]} com status {document[2]}...")  # Depuração
+                # Aqui, assumimos que document[0] é o ID do documento e document[2] é o status
+                if document[2] != status:  # Verifica se o status é diferente
+                    success = self.database.update_document_status(document[0], status)
                     if success:
                         self.page.add(ft.Text(f"Status do documento {document[0]} atualizado para {status}.", color="green"))
-                        updated = True  # Marca que pelo menos um documento foi atualizado
+                        updated = True
                     else:
                         self.page.add(ft.Text(f"Erro ao atualizar status do documento {document[0]}.", color="red"))
-            
             if not updated:
-                # Caso nenhum status tenha sido alterado
                 self.page.add(ft.Text("Nenhum status foi alterado. Todos os documentos já estão com esse status.", color="orange"))
         else:
             self.page.add(ft.Text("Nenhum documento encontrado para este aluno.", color="red"))
-
-
-
-
