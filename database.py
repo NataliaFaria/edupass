@@ -38,7 +38,11 @@ class Database:
             cpf TEXT NOT NULL UNIQUE,
             phone TEXT NOT NULL,
             address TEXT NOT NULL,
-            password TEXT NOT NULL
+            password TEXT NOT NULL,
+            institution_id INTEGER,  
+            course_id INTEGER,  
+            FOREIGN KEY (institution_id) REFERENCES institutions(id),
+            FOREIGN KEY (course_id) REFERENCES courses(id)
         )''')
 
         # Tabela de relacionamento entre alunos e cursos
@@ -88,22 +92,25 @@ class Database:
             connection.close()
 
 
-    def register_student(self, name, email, dob, cpf, phone, address, password):
-        """Registra um novo aluno no banco de dados"""
+    def register_student(self, name, email, dob, cpf, phone, address, password, institution_id, course_id):
+        """Registra um novo aluno no banco de dados com a instituição e o curso"""
         connection = sqlite3.connect(self.db_name)
         cursor = connection.cursor()
         try:
             cursor.execute(
-                '''INSERT INTO students (name, email, dob, cpf, phone, address, password) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)''',
-                (name, email, dob, cpf, phone, address, password)
+                '''INSERT INTO students (name, email, dob, cpf, phone, address, password, institution_id, course_id) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                (name, email, dob, cpf, phone, address, password, institution_id, course_id)
             )
             connection.commit()
+            print("Aluno registrado com sucesso!")
             return True
-        except sqlite3.IntegrityError:
+        except sqlite3.IntegrityError as e:
+            print(f"Erro ao registrar aluno: {e}")
             return False
         finally:
             connection.close()
+
 
     def register_student_in_course(self, student_id, course_id):
         """Inscreve um aluno em um curso"""
@@ -183,16 +190,26 @@ class Database:
         """Retorna os cursos cadastrados por uma instituição"""
         connection = sqlite3.connect(self.db_name)
         cursor = connection.cursor()
+        print(f"Consultando cursos para a instituição com ID: {institution_id}")
+        
         cursor.execute(
             '''SELECT id, name, duration FROM courses WHERE institution_id = ?''',
             (institution_id,)
         )
         courses = cursor.fetchall()
         connection.close()
+        
+        print(f"Consultando cursos para o ID {institution_id}. Cursos retornados: {courses}")
+        if not courses:
+            print(f"Nenhum curso encontrado para o ID {institution_id}. Verifique os dados no banco.")
+            
         return [
             {"id": course[0], "name": course[1], "duration": course[2]}
             for course in courses
         ]
+
+
+
     
     def delete_course(self, course_id):
         # SQL para excluir o curso
@@ -223,4 +240,13 @@ class Database:
         except Exception as e:
             print(f"Erro ao atualizar curso: {e}")
             return False  # Falha ao atualizar
+    
+    def get_all_institutions(self):
+        """Obtém todas as instituições cadastradas"""
+        connection = sqlite3.connect(self.db_name)
+        cursor = connection.cursor()
+        cursor.execute('''SELECT id, name FROM institutions''')
+        institutions = cursor.fetchall()
+        connection.close()
+        return [{"id": institution[0], "name": institution[1]} for institution in institutions]
 
