@@ -156,6 +156,27 @@ class Database:
         if result:
             return result[0]  # Retorna o ID da instituição
         return None
+    
+    def get_student_by_id(self, student_id):
+        """Obtém os dados de um aluno pelo ID"""
+        connection = sqlite3.connect(self.db_name)
+        cursor = connection.cursor()
+        cursor.execute('''SELECT id, name, email, dob, cpf, phone, address FROM students WHERE id = ?''', (student_id,))
+        result = cursor.fetchone()
+        connection.close()
+
+        if result:
+            return {
+                "id": result[0],
+                "name": result[1],
+                "email": result[2],
+                "dob": result[3],
+                "cpf": result[4],
+                "phone": result[5],
+                "address": result[6]
+            }
+        return None
+
 
 
     def get_courses_by_institution(self, institution_id):
@@ -172,4 +193,34 @@ class Database:
             {"id": course[0], "name": course[1], "duration": course[2]}
             for course in courses
         ]
+    
+    def delete_course(self, course_id):
+        # SQL para excluir o curso
+        sql = "DELETE FROM courses WHERE id = ?"
+        
+        try:
+            cursor = self.db.cursor()
+            cursor.execute(sql, (course_id,))
+            self.db.commit()
+            return True  # Sucesso ao excluir
+        except Exception as e:
+            print(f"Erro ao excluir curso: {e}")
+            return False  # Falha ao excluir
+        
+    def update_course(self, course_id, name, description, duration):
+        # SQL para atualizar o curso
+        sql = """
+            UPDATE courses
+            SET name = ?, description = ?, duration = ?
+            WHERE id = ?
+        """
+        
+        try:
+            cursor = self.db.cursor()
+            cursor.execute(sql, (name, description, duration, course_id))
+            self.db.commit()
+            return True  # Sucesso ao atualizar
+        except Exception as e:
+            print(f"Erro ao atualizar curso: {e}")
+            return False  # Falha ao atualizar
 

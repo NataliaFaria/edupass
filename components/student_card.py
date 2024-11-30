@@ -28,7 +28,7 @@ class StudentCardPage:
                         ft.Text(f"ID: {student_data['id']}", size=24),
                         ft.Text(f"Nome: {student_data['name']}", size=24),
                         ft.Text(f"E-mail: {student_data['email']}", size=24),
-                        ft.TextButton("Voltar", on_click=self.go_back),
+                        ft.TextButton("Voltar para o Painel", on_click=self.go_back),
                     ],
                     alignment=ft.MainAxisAlignment.CENTER,
                     spacing=20,

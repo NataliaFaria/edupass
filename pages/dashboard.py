@@ -112,7 +112,9 @@ class DashboardPage:
 
     def show_student_card(self, e):
         if self.student_id is not None:
-            # Passa a instância de DashboardPage ao StudentCardPage
-            StudentCardPage(self.page, self.student_id, self)
+            # Navegar para a página da carteirinha
+            self.page.clean()  # Limpa a página atual antes de navegar para a próxima
+            StudentCardPage(self.page, self.student_id, self)  # Passa a instância de DashboardPage para o StudentCardPage
         else:
             self.page.add(ft.Text("ID do aluno não disponível.", color="red"))
+
