@@ -123,15 +123,16 @@ class Database:
             connection.close()
 
     def login_institution(self, email, password):
-        """Verifica se o login da instituição é válido"""
+        """Verifica se o login da instituição é válido e retorna o ID"""
         connection = sqlite3.connect(self.db_name)
         cursor = connection.cursor()
-        cursor.execute('''SELECT password FROM institutions WHERE email = ?''', (email,))
+        cursor.execute('''SELECT id, password FROM institutions WHERE email = ?''', (email,))
         result = cursor.fetchone()
         connection.close()
-        if result and result[0] == password:
-            return True
-        return False
+        if result and result[1] == password:
+            return result[0]  # Retorna o ID da instituição
+        return None
+
 
     def login_student(self, email, password):
         """Verifica se o login do aluno é válido e retorna os dados do aluno"""
@@ -145,22 +146,30 @@ class Database:
             return result
         return None
 
-    def get_student_by_id(self, student_id):
-        """Obtém os dados do aluno pelo ID"""
+    def get_institution_id_by_email(self, email):
+        """Obtém o ID da instituição pelo e-mail"""
         connection = sqlite3.connect(self.db_name)
         cursor = connection.cursor()
-        cursor.execute('''SELECT id, name, email, dob, cpf, phone, address FROM students WHERE id = ?''', (student_id,))
-        student_data = cursor.fetchone()
+        cursor.execute('''SELECT id FROM institutions WHERE email = ?''', (email,))
+        result = cursor.fetchone()
         connection.close()
-
-        if student_data:
-            return {
-                'id': student_data[0],
-                'name': student_data[1],
-                'email': student_data[2],
-                'dob': student_data[3],
-                'cpf': student_data[4],
-                'phone': student_data[5],
-                'address': student_data[6]
-            }
+        if result:
+            return result[0]  # Retorna o ID da instituição
         return None
+
+
+    def get_courses_by_institution(self, institution_id):
+        """Retorna os cursos cadastrados por uma instituição"""
+        connection = sqlite3.connect(self.db_name)
+        cursor = connection.cursor()
+        cursor.execute(
+            '''SELECT id, name, duration FROM courses WHERE institution_id = ?''',
+            (institution_id,)
+        )
+        courses = cursor.fetchall()
+        connection.close()
+        return [
+            {"id": course[0], "name": course[1], "duration": course[2]}
+            for course in courses
+        ]
+

@@ -4,10 +4,11 @@ from .course_registration import CourseRegistrationPage
 from database import Database
 
 class DashboardPage:
-    def __init__(self, page: ft.Page, user_type: str, student_id: int = None):
+    def __init__(self, page: ft.Page, user_type: str, student_id: int = None, institution_id: int = None):
         self.page = page
         self.user_type = user_type
         self.student_id = student_id
+        self.institution_id = institution_id
         self.create_dashboard()
 
     def create_dashboard(self):
@@ -51,11 +52,63 @@ class DashboardPage:
     
     def navigate_to_course_registration(self, e):
         # Navegar para a página de registro de cursos
-        CourseRegistrationPage(self.page)
+        CourseRegistrationPage(self.page, self)
 
     def show_courses(self, e):
-        # Simulação de visualização de cursos cadastrados
-        self.page.add(ft.Text("Lista de Cursos Cadastrados (Em desenvolvimento)"))
+        database = Database()  # Instância do banco de dados
+
+        # Verificar se o ID da instituição está disponível
+        if not self.institution_id:
+            self.page.clean()
+            self.page.add(
+                ft.Text("Erro: ID da instituição não encontrado.", color="red", size=20)
+            )
+            return
+
+        # Buscar cursos cadastrados pela instituição logada
+        courses = database.get_courses_by_institution(self.institution_id)
+
+        # Verificar se existem cursos cadastrados
+        if not courses:
+            self.page.clean()
+            self.page.add(
+                ft.Column(
+                    controls=[
+                        ft.Text("Nenhum curso cadastrado.", size=20, color="red"),
+                        ft.TextButton("Voltar ao Painel", on_click=lambda e: self.create_dashboard()),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                )
+            )
+            return
+
+        # Criar lista visual dos cursos
+        course_list = ft.ListView(
+            controls=[
+                ft.ListTile(
+                    leading=ft.Icon(ft.icons.BOOK),
+                    title=ft.Text(course["name"]),
+                    subtitle=ft.Text(f"Duração: {course['duration']}"),
+                )
+                for course in courses
+            ],
+            spacing=10,
+        )
+
+        # Exibir a lista de cursos
+        self.page.clean()
+        self.page.add(
+            ft.Column(
+                controls=[
+                    ft.Text("Cursos Cadastrados", size=30),
+                    course_list,
+                    ft.TextButton("Voltar ao Painel", on_click=lambda e: self.create_dashboard()),
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                spacing=20,
+            )
+        )
+
 
     def show_student_card(self, e):
         if self.student_id is not None:

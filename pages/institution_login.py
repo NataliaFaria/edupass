@@ -2,7 +2,6 @@ import flet as ft
 from database import Database
 from .dashboard import DashboardPage
 
-
 class InstitutionLoginPage:
     def __init__(self, page: ft.Page):
         self.page = page
@@ -26,8 +25,14 @@ class InstitutionLoginPage:
             email = email_field.value
             password = password_field.value
             if self.database.login_institution(email, password):
-                # Redirecionar para o painel de controle da instituição
-                DashboardPage(self.page, user_type="institution")
+                # Obter o ID da instituição após o login
+                institution_id = self.database.get_institution_id_by_email(email)
+
+                if institution_id:
+                    # Redirecionar para o painel de controle da instituição, passando o ID
+                    DashboardPage(self.page, user_type="institution", institution_id=institution_id)
+                else:
+                    self.page.add(ft.Text("Instituição não encontrada.", color=ft.colors.RED))
             else:
                 self.page.add(ft.Text("Email ou senha incorretos!", color=ft.colors.RED))
 
