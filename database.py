@@ -10,7 +10,7 @@ class Database:
         connection = sqlite3.connect(self.db_name)
         cursor = connection.cursor()
 
-        # Criar tabela de instituições
+        
         cursor.execute('''CREATE TABLE IF NOT EXISTS institutions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
@@ -20,7 +20,7 @@ class Database:
             password TEXT NOT NULL
         )''')
 
-        # Criar tabela de cursos
+        
         cursor.execute('''CREATE TABLE IF NOT EXISTS courses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
@@ -29,7 +29,7 @@ class Database:
             FOREIGN KEY (institution_id) REFERENCES institutions(id)
         )''')
 
-        # Criar tabela de alunos
+        
         cursor.execute('''CREATE TABLE IF NOT EXISTS students (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
@@ -45,7 +45,7 @@ class Database:
             FOREIGN KEY (course_id) REFERENCES courses(id)
         )''')
 
-        # Tabela de relacionamento entre alunos e cursos
+        
         cursor.execute('''CREATE TABLE IF NOT EXISTS student_courses (
             student_id INTEGER,
             course_id INTEGER,
@@ -93,8 +93,8 @@ class Database:
         try:
             cursor.execute(
                 '''INSERT INTO courses (name, institution_id, duration) 
-                VALUES (?, ?, ?)''',  # Corrigido para incluir o campo 'duration'
-                (name, institution_id, duration)  # Passando todos os parâmetros
+                VALUES (?, ?, ?)''',  
+                (name, institution_id, duration)
             )
             connection.commit()
             return True
@@ -224,20 +224,20 @@ class Database:
 
     
     def delete_course(self, course_id):
-        # SQL para excluir o curso
+        
         sql = "DELETE FROM courses WHERE id = ?"
         
         try:
             cursor = self.db.cursor()
             cursor.execute(sql, (course_id,))
             self.db.commit()
-            return True  # Sucesso ao excluir
+            return True
         except Exception as e:
             print(f"Erro ao excluir curso: {e}")
-            return False  # Falha ao excluir
+            return False 
         
     def update_course(self, course_id, name, description, duration):
-        # SQL para atualizar o curso
+        
         sql = """
             UPDATE courses
             SET name = ?, description = ?, duration = ?
@@ -248,10 +248,10 @@ class Database:
             cursor = self.db.cursor()
             cursor.execute(sql, (name, description, duration, course_id))
             self.db.commit()
-            return True  # Sucesso ao atualizar
+            return True 
         except Exception as e:
             print(f"Erro ao atualizar curso: {e}")
-            return False  # Falha ao atualizar
+            return False 
     
     def get_all_institutions(self):
         """Obtém todas as instituições cadastradas"""
@@ -331,7 +331,7 @@ class Database:
         )
         connection.commit()
         connection.close()
-        return cursor.rowcount > 0  # Retorna True se a atualização foi bem-sucedida
+        return cursor.rowcount > 0
     
     def get_institution_id(self, student_id):
         """Obtém o institution_id com base no student_id"""

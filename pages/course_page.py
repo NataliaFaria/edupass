@@ -29,16 +29,20 @@ class CoursesPage:
         course_list = ft.ListView(
             controls=[
                 ft.ListTile(
-                    leading=ft.Icon(ft.icons.BOOK),
                     title=ft.Text(course["name"]),
                     subtitle=ft.Text(f"Duração: {course['duration']}"),
                     trailing=ft.Row(
                         controls=[
-                            ft.IconButton(ft.icons.EDIT, on_click=lambda e, course=course: self.edit_course(e, course)),
-                            ft.IconButton(ft.icons.DELETE, on_click=lambda e, course=course: self.delete_course(e, course)),
+                            ft.TextButton(
+                                "Deletar",
+                                on_click=lambda e, c=course: self.delete_course(e, c)
+                            ),
+                            ft.TextButton(
+                                "Editar",
+                                on_click=lambda e, c=course: self.edit_course(e, c)
+                            ),
                         ],
-                        alignment=ft.MainAxisAlignment.END,  # Alinha os botões à direita
-                        spacing=20,  # Espaçamento entre os botões
+                        spacing=20,
                     ),
                 )
                 for course in courses
@@ -93,11 +97,11 @@ class CoursesPage:
 
             self.page.update()
 
-        # Função para voltar à página de cursos
+        
         def go_back(e):
             self.show_courses()
 
-        # Exibir o formulário de edição
+        
         self.page.clean()
         self.page.add(
             ft.Column(
@@ -118,16 +122,15 @@ class CoursesPage:
 
     def delete_course(self, e, course):
         """Exclui o curso após confirmação"""
-        # Função de confirmação de exclusão
+        
         def confirm_delete(e):
             if self.database.delete_course(course["id"]):
                 self.show_courses()  # Atualizar a lista de cursos após exclusão
             else:
-                # Mostrar mensagem de erro
+            
                 self.page.add(ft.Text("Erro ao excluir o curso.", color=ft.colors.RED))
 
         def cancel_delete(e):
-            self.page.clean()
             self.show_courses()  # Voltar à lista de cursos
 
         # Exibir a confirmação de exclusão
@@ -151,4 +154,4 @@ class CoursesPage:
 
     def go_back(self, e):
         """Retorna à página anterior"""
-        self.page.go("/dashboard")  # Ajuste o caminho conforme sua aplicação
+        self.page.go("/dashboard")

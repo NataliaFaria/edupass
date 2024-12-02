@@ -3,6 +3,7 @@ from components.student_card import StudentCardPage
 from .course_registration import CourseRegistrationPage
 from .document_upload_page import DocumentUploadPage
 from .manage_student import ManageStudentsPage
+from .document_status_page import DocumentStatusPage
 from database import Database
 
 class DashboardPage:
@@ -24,7 +25,7 @@ class DashboardPage:
                     ft.TextButton("Gerenciar Alunos", on_click=self.navigate_to_manage_student),
                     ft.TextButton("Cadastrar Curso", on_click=self.navigate_to_course_registration),  # Novo botão para registrar cursos
                     ft.TextButton("Ver Cursos Cadastrados", on_click=self.show_courses),  # Novo botão para visualizar cursos
-                    ft.TextButton("Visualizar Relatórios", on_click=lambda e: self.page.add(ft.Text("Funcionalidade de Relatórios"))),
+                    # ft.TextButton("Visualizar Relatórios", on_click=lambda e: self.page.add(ft.Text("Funcionalidade de Relatórios"))),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 spacing=20,
@@ -33,9 +34,9 @@ class DashboardPage:
             content = ft.Column(
                 controls=[
                     ft.Text("Bem-vindo ao painel do Aluno!", size=30),
-                    ft.TextButton("Meus Cursos", on_click=lambda e: self.page.add(ft.Text("Lista de Cursos Inscritos"))),
+                    # ft.TextButton("Meus Cursos", on_click=lambda e: self.page.add(ft.Text("Lista de Cursos Inscritos"))),
                     ft.TextButton("Adicionar documentos", on_click=self.navigate_to_document_upload),
-                    ft.TextButton("Status", on_click=lambda e: self.page.add(ft.Text("Status"))),
+                    ft.TextButton("Status", on_click=self.navigate_to_document_status),
                     ft.TextButton("Ver Minha Carteirinha", on_click=self.show_student_card),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
@@ -126,3 +127,10 @@ class DashboardPage:
 
     def navigate_to_manage_student(self, e):
         ManageStudentsPage(self.page, self.institution_id, self)
+
+    def navigate_to_document_status(self, e):
+        """Navega para a página de status dos documentos"""
+        if self.student_id:
+            DocumentStatusPage(self.page, self.student_id, self)
+        else:
+            self.page.add(ft.Text("Erro: ID do aluno não disponível.", color="red"))
