@@ -1,4 +1,7 @@
 import flet as ft
+import webbrowser
+import os
+from urllib.parse import quote
 from database import Database
 
 class ManageDocumentPage:
@@ -34,8 +37,6 @@ class ManageDocumentPage:
                 ft.Column(
                     controls=[
                         ft.ListTile(
-                            # title=ft.Text(f"Documento ID: {doc[0]}"),
-                            # subtitle=ft.Text(f"Status: {doc[2]}"),
                             trailing=ft.Row(
                                 controls=[
                                     ft.TextButton(
@@ -79,8 +80,15 @@ class ManageDocumentPage:
         )
 
     def download_document(self, file_path):
-        """Cria um link para baixar o documento"""
-        self.page.add(ft.ExternalLink(text="Abrir Documento", url=file_path))
+        """Abre o documento com o aplicativo associado ao tipo de arquivo"""
+        try:
+            absolute_path = os.path.abspath(file_path)  # Caminho absoluto
+            if os.path.exists(absolute_path):
+                os.startfile(absolute_path)  # Abre o arquivo com o programa associado
+            else:
+                self.page.add(ft.Text(f"Arquivo não encontrado: {absolute_path}", color="red"))
+        except Exception as e:
+            self.page.add(ft.Text(f"Erro ao tentar abrir o arquivo: {e}", color="red"))
 
     def update_status(self, status, document_id):
         """Atualiza o status de um documento"""

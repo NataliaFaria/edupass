@@ -66,7 +66,7 @@ class StudentCardPage:
                 ft.Column(
                     controls=[
                         ft.Text("Sua Carteirinha", size=30),
-                        ft.Text(f"ID: {student_data['id']}", size=24),
+                        # ft.Text(f"ID: {student_data['id']}", size=24),
                         ft.Text(f"Nome: {student_data['name']}", size=24),
                         ft.Text(f"E-mail: {student_data['email']}", size=24),
                         ft.Text(f"Status: {status}", size=24),  # Exibe o status

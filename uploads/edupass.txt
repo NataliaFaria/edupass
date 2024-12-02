@@ -6,9 +6,7 @@ CPF
 Telefone
 Endereço residencial
 
-
 Pendente: Confirmação do e-mail
-
 
 Cadastro Instituição:
 Nome
@@ -23,12 +21,8 @@ Foto
 Curso
 Data de Matrícula
 
-
-
-Criptografar senhas - Pendente
-Validação dos documentos pela instituição - +/-
 Edição e exclusão de curso para instituição - Pendente
-Listar curso para aluno - Pendente
-Edição e exclusão de curso para aluno - Pendente
 Instituição baixar documentos - Pendente
 Integrar componente - Pendente
+Listar curso para aluno - Pendente
+Edição e exclusão de curso para aluno - Pendente
