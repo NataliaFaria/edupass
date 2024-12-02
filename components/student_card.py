@@ -38,12 +38,15 @@ class StudentCardPage:
     def get_student_status(self, student_id):
         """Verifica os documentos do estudante e determina o status"""
         documents = self.db.get_documents_for_student(student_id)  # Assume que a função retorna os documentos do estudante
-        for doc in documents:
-            # Acessando o status pelo índice correto da tupla
-            status = doc[6]  # O status está no índice 6, conforme a estrutura que você passou
-            if status == "Reprovado":  # Se algum documento for reprovado, o status será reprovado
-                return "Reprovado"
-        return "Aprovado"  # Se todos os documentos estiverem aprovados
+        if documents:
+            for doc in documents:
+                # Acessando o status pelo índice correto da tupla
+                status = doc[6]  # O status está no índice 6, conforme a estrutura que você passou
+                if status == "Reprovado" or status == "Pendente":  # Se algum documento for reprovado, o status será reprovado
+                    return "Reprovado"
+            return "Aprovado"  # Se todos os documentos estiverem aprovados
+        else:
+            return "Reprovado"
 
 
     def show_student_card(self):

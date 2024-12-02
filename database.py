@@ -1,4 +1,5 @@
 import sqlite3
+import bcrypt
 
 class Database:
     def __init__(self, db_name='edupass.db'):
@@ -70,14 +71,15 @@ class Database:
         connection.close()
 
     def register_institution(self, name, address, shift, email, password):
-        """Registra uma nova instituição no banco de dados"""
+        """Registra uma nova instituição no banco de dados com senha criptografada"""
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         connection = sqlite3.connect(self.db_name)
         cursor = connection.cursor()
         try:
             cursor.execute(
                 '''INSERT INTO institutions (name, address, shift, email, password) 
                 VALUES (?, ?, ?, ?, ?)''',
-                (name, address, shift, email, password)
+                (name, address, shift, email, hashed_password)
             )
             connection.commit()
             return True
@@ -105,20 +107,19 @@ class Database:
 
 
     def register_student(self, name, email, dob, cpf, phone, address, password, institution_id, course_id):
-        """Registra um novo aluno no banco de dados com a instituição e o curso"""
+        """Registra um novo aluno com senha criptografada"""
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         connection = sqlite3.connect(self.db_name)
         cursor = connection.cursor()
         try:
             cursor.execute(
                 '''INSERT INTO students (name, email, dob, cpf, phone, address, password, institution_id, course_id) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                (name, email, dob, cpf, phone, address, password, institution_id, course_id)
+                (name, email, dob, cpf, phone, address, hashed_password, institution_id, course_id)
             )
             connection.commit()
-            print("Aluno registrado com sucesso!")
             return True
-        except sqlite3.IntegrityError as e:
-            print(f"Erro ao registrar aluno: {e}")
+        except sqlite3.IntegrityError:
             return False
         finally:
             connection.close()
@@ -142,26 +143,24 @@ class Database:
             connection.close()
 
     def login_institution(self, email, password):
-        """Verifica se o login da instituição é válido e retorna o ID"""
+        """Verifica o login da instituição com senha criptografada"""
         connection = sqlite3.connect(self.db_name)
         cursor = connection.cursor()
         cursor.execute('''SELECT id, password FROM institutions WHERE email = ?''', (email,))
         result = cursor.fetchone()
         connection.close()
-        if result and result[1] == password:
+        if result and bcrypt.checkpw(password.encode('utf-8'), result[1]):
             return result[0]  # Retorna o ID da instituição
         return None
 
-
     def login_student(self, email, password):
-        """Verifica se o login do aluno é válido e retorna os dados do aluno"""
+        """Verifica o login do aluno com senha criptografada"""
         connection = sqlite3.connect(self.db_name)
         cursor = connection.cursor()
         cursor.execute('''SELECT id, password FROM students WHERE email = ?''', (email,))
         result = cursor.fetchone()
         connection.close()
-
-        if result and result[1] == password:
+        if result and bcrypt.checkpw(password.encode('utf-8'), result[1]):
             return result
         return None
 
