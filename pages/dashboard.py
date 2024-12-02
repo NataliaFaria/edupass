@@ -2,8 +2,9 @@ import flet as ft
 from components.student_card import StudentCardPage
 from .course_registration import CourseRegistrationPage
 from .document_upload_page import DocumentUploadPage
-from .manage_student import ManageStudentsPage
+from .manage_students import ManageStudentsPage
 from .document_status_page import DocumentStatusPage
+from .manage_document import ManageDocumentPage
 from database import Database
 
 class DashboardPage:
@@ -126,7 +127,8 @@ class DashboardPage:
         DocumentUploadPage(self.page, self.student_id, self)
 
     def navigate_to_manage_student(self, e):
-        ManageStudentsPage(self.page, self.institution_id, self)
+        ManageStudentsPage(self.page, self.institution_id)
+
 
     def navigate_to_document_status(self, e):
         """Navega para a página de status dos documentos"""
