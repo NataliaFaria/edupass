@@ -32,8 +32,12 @@ class ManageStudentsPage:
         student_list = ft.ListView(
             controls=[
                 ft.Column(
+                    # ft.ListTile(
+                    #     title=ft.Text(student["name"]),
+                    # ),
                     controls=[
                         ft.ListTile(
+                            # title=ft.Text(student["name"]),
                             trailing=ft.Row(
                                 controls=[
                                     ft.TextButton(
