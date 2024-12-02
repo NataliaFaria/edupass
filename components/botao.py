@@ -26,14 +26,14 @@ def BotaoTexto(rotulo: str, acao):
     )
 
 def BotaoGeneros(page, text, time_range, mostrar_popup):
-        return ft.ElevatedButton(
-            text,
-            on_click=lambda e: mostrar_popup(e, time_range),
-            width=300,
-            style=ft.ButtonStyle(
-                color=ft.colors.WHITE,
-                bgcolor=COR_PRIMARIA,
-                shape=ft.RoundedRectangleBorder(radius=5),
-            )
+    return ft.ElevatedButton(
+        text,
+        on_click=lambda e: mostrar_popup(e, time_range),
+        width=300,
+        style=ft.ButtonStyle(
+            color=ft.colors.WHITE,
+            bgcolor=COR_PRIMARIA,
+            shape=ft.RoundedRectangleBorder(radius=5),
         )
+    )
 
