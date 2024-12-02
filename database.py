@@ -220,37 +220,44 @@ class Database:
         ]
 
 
-
-    
     def delete_course(self, course_id):
-        
-        sql = "DELETE FROM courses WHERE id = ?"
-        
+        """Exclui um curso do banco de dados"""
+        connection = sqlite3.connect(self.db_name)
+        cursor = connection.cursor()
         try:
-            cursor = self.db.cursor()
-            cursor.execute(sql, (course_id,))
-            self.db.commit()
+            cursor.execute('''DELETE FROM courses WHERE id = ?''', (course_id,))
+            connection.commit()
             return True
         except Exception as e:
             print(f"Erro ao excluir curso: {e}")
-            return False 
+            return False
+        finally:
+            connection.close()
+
         
-    def update_course(self, course_id, name, description, duration):
-        
+    def update_course(self, course_id, name, duration):
+        """Atualiza os detalhes de um curso no banco de dados"""
+        connection = sqlite3.connect(self.db_name)  # Abre conexão com o banco
+        cursor = connection.cursor()
+
         sql = """
             UPDATE courses
-            SET name = ?, description = ?, duration = ?
+            SET name = ?, duration = ?
             WHERE id = ?
         """
         
         try:
-            cursor = self.db.cursor()
-            cursor.execute(sql, (name, description, duration, course_id))
-            self.db.commit()
-            return True 
+            print(f"Atualizando curso com ID {course_id}: Nome='{name}', Duração='{duration}'")
+            cursor.execute(sql, (name, duration, course_id))
+            connection.commit()  # Salva as alterações no banco
+            print(f"Curso com ID {course_id} atualizado com sucesso.")
+            return True
         except Exception as e:
-            print(f"Erro ao atualizar curso: {e}")
-            return False 
+            print(f"Erro ao atualizar curso com ID {course_id}: {e}")
+            return False
+        finally:
+            connection.close()  # Garante que a conexão será fechada
+
     
     def get_all_institutions(self):
         """Obtém todas as instituições cadastradas"""
@@ -358,3 +365,13 @@ class Database:
         connection.close()
         return documents
 
+    def get_course_by_id(self, course_id):
+        """Retorna as informações de um curso baseado no ID"""
+        connection = sqlite3.connect(self.db_name)
+        cursor = connection.cursor()
+        cursor.execute('''SELECT * FROM courses WHERE id = ?''', (course_id,))
+        course = cursor.fetchone()
+        connection.close()
+        if course:
+            return {"id": course[0], "name": course[1], "institution_id": course[2], "duration": course[3]}
+        return None

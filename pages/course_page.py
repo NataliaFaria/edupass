@@ -1,157 +1,145 @@
 import flet as ft
 
 class CoursesPage:
-    def __init__(self, page: ft.Page, database, institution_id):
+    def __init__(self, page: ft.Page, dashboard_page, database):
         self.page = page
+        self.dashboard_page = dashboard_page
         self.database = database
-        self.institution_id = institution_id
-        self.show_courses()
+        self.institution_id = dashboard_page.institution_id
+        self.course_name_field = None
+        self.course_duration_field = None
+        self.create_course_page()
 
-    def show_courses(self):
-        # Buscar os cursos da instituição
-        courses = self.database.get_courses_by_institution(self.institution_id)
-
-        # Verificar se existem cursos cadastrados
-        if not courses:
-            self.page.clean()
-            self.page.add(
-                ft.Column(
-                    controls=[
-                        ft.Text("Nenhum curso cadastrado.", size=20, color="red"),
-                        ft.TextButton("Voltar para o Painel", on_click=self.go_back),
-                    ],
-                    alignment=ft.MainAxisAlignment.CENTER,
-                )
-            )
-            return
-
-        # Montar a lista de cursos com botões de editar e excluir
-        course_list = ft.ListView(
-            controls=[
-                ft.ListTile(
-                    title=ft.Text(course["name"]),
-                    subtitle=ft.Text(f"Duração: {course['duration']}"),
-                    trailing=ft.Row(
-                        controls=[
-                            ft.TextButton(
-                                "Deletar",
-                                on_click=lambda e, c=course: self.delete_course(e, c)
-                            ),
-                            ft.TextButton(
-                                "Editar",
-                                on_click=lambda e, c=course: self.edit_course(e, c)
-                            ),
-                        ],
-                        spacing=20,
-                    ),
-                )
-                for course in courses
-            ],
-            spacing=10,
-        )
-
-        # Adicionar a lista à página
+    def create_course_page(self):
+        """Cria a página com a lista de cursos existentes e opções de registro"""
         self.page.clean()
+
+        # Adiciona o título, lista de cursos e botões
         self.page.add(
             ft.Column(
                 controls=[
                     ft.Text("Cursos Cadastrados", size=30),
-                    course_list,
+                    self.create_course_list(),
+                    ft.ElevatedButton("Registrar Novo Curso", on_click=self.show_course_registration_form),
                     ft.TextButton("Voltar", on_click=self.go_back),
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,
-            )
-        )
-
-    def edit_course(self, e, course):
-        """Exibe o formulário para editar o curso selecionado"""
-        # Campos de edição com valores preenchidos
-        self.course_name_field = ft.TextField(label="Nome do Curso", value=course["name"])
-        self.course_description_field = ft.TextField(label="Descrição do Curso", value=course["description"])
-        self.course_duration_field = ft.TextField(label="Duração (ex: 6 meses)", value=course["duration"])
-
-        self.success_message = ft.Text("", size=20, color=ft.colors.GREEN)
-        self.error_message = ft.Text("", size=20, color=ft.colors.RED)
-
-        # Função para salvar as alterações
-        def save_changes(e):
-            updated_name = self.course_name_field.value
-            updated_description = self.course_description_field.value
-            updated_duration = self.course_duration_field.value
-
-            # Validar os campos
-            if not updated_name or not updated_description or not updated_duration:
-                self.success_message.value = ""
-                self.error_message.value = "Todos os campos devem ser preenchidos!"
-                self.page.update()
-                return
-
-            # Atualizar o curso no banco de dados
-            if self.database.update_course(course["id"], updated_name, updated_description, updated_duration):
-                self.success_message.value = "Curso atualizado com sucesso!"
-                self.error_message.value = ""
-                self.show_courses()  # Atualizar a lista de cursos
-            else:
-                self.success_message.value = ""
-                self.error_message.value = "Erro ao atualizar o curso!"
-
-            self.page.update()
-
-        
-        def go_back(e):
-            self.show_courses()
-
-        
-        self.page.clean()
-        self.page.add(
-            ft.Column(
-                controls=[
-                    ft.Text("Editar Curso", size=30),
-                    self.course_name_field,
-                    self.course_description_field,
-                    self.course_duration_field,
-                    self.success_message,
-                    self.error_message,
-                    ft.ElevatedButton("Salvar Alterações", on_click=save_changes),
-                    ft.TextButton("Voltar", on_click=go_back),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 spacing=20,
             )
         )
 
-    def delete_course(self, e, course):
-        """Exclui o curso após confirmação"""
+    def create_course_list(self):
+        """Cria a lista de cursos cadastrados pela instituição"""
+        courses = self.database.get_courses_by_institution(self.institution_id)
         
-        def confirm_delete(e):
-            if self.database.delete_course(course["id"]):
-                self.show_courses()  # Atualizar a lista de cursos após exclusão
-            else:
-            
-                self.page.add(ft.Text("Erro ao excluir o curso.", color=ft.colors.RED))
+        course_controls = []
+        for course in courses:
+            course_controls.append(
+                ft.Row(
+                    controls=[
+                        ft.Text(course["name"], size=20),
+                        ft.Text(course["duration"], size=16),
+                        ft.IconButton(ft.icons.EDIT, on_click=lambda e, course_id=course["id"]: self.show_edit_course_form(course_id)),
+                        ft.IconButton(ft.icons.DELETE, on_click=lambda e, course_id=course["id"]: self.confirm_delete_course(course_id)),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    spacing=10,
+                )
+            )
 
-        def cancel_delete(e):
-            self.show_courses()  # Voltar à lista de cursos
+        return ft.Column(controls=course_controls)
 
-        # Exibir a confirmação de exclusão
+    def show_course_registration_form(self, e):
+        """Exibe o formulário de registro de um novo curso"""
         self.page.clean()
+
+        self.course_name_field = ft.TextField(label="Nome do Curso", autofocus=True)
+        self.course_duration_field = ft.TextField(label="Duração do Curso")
+
         self.page.add(
             ft.Column(
                 controls=[
-                    ft.Text(f"Tem certeza que deseja excluir o curso '{course['name']}'?", size=20),
-                    ft.Row(
-                        controls=[
-                            ft.ElevatedButton("Confirmar", on_click=confirm_delete),
-                            ft.ElevatedButton("Cancelar", on_click=cancel_delete),
-                        ],
-                        alignment=ft.MainAxisAlignment.CENTER,
-                        spacing=10,
-                    ),
+                    ft.Text("Registrar Novo Curso", size=30),
+                    self.course_name_field,
+                    self.course_duration_field,
+                    ft.ElevatedButton("Salvar Curso", on_click=self.register_course),
+                    ft.TextButton("Voltar", on_click=self.create_course_page),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
+                spacing=20,
             )
         )
 
+    def register_course(self, e):
+        """Método para registrar um novo curso no banco de dados"""
+        name = self.course_name_field.value
+        duration = self.course_duration_field.value
+
+        if self.database.register_course(name, "", self.institution_id, duration):
+            self.create_course_page()  # Recarrega a página com os dados atualizados
+        else:
+            # Exibe erro ou mensagem de falha
+            pass
+
+    def show_edit_course_form(self, course_id):
+        """Exibe o formulário de edição de um curso existente"""
+        course = self.database.get_course_by_id(course_id)
+
+        self.page.clean()
+
+        self.course_name_field = ft.TextField(label="Nome do Curso", value=course["name"], autofocus=True)
+        self.course_duration_field = ft.TextField(label="Duração do Curso", value=course["duration"])
+
+        self.page.add(
+            ft.Column(
+                controls=[
+                    ft.Text("Editar Curso", size=30),
+                    self.course_name_field,
+                    self.course_duration_field,
+                    ft.ElevatedButton("Salvar Alterações", on_click=lambda e: self.save_course_edits(course_id)),
+                    ft.TextButton("Voltar", on_click=self.create_course_page),
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                spacing=20,
+            )
+        )
+
+    def save_course_edits(self, course_id):
+        """Salva as alterações feitas em um curso"""
+        name = self.course_name_field.value
+        duration = self.course_duration_field.value
+
+        if self.database.update_course(course_id, name, duration):
+            self.create_course_page()  # Atualiza a lista de cursos
+        else:
+            # Exibe erro ou mensagem de falha
+            pass
+
+    def confirm_delete_course(self, course_id):
+        """Confirma a exclusão de um curso"""
+        self.page.clean()
+
+        self.page.add(
+            ft.Column(
+                controls=[
+                    ft.Text("Tem certeza que deseja excluir este curso?", size=20),
+                    ft.ElevatedButton("Sim, Excluir", on_click=lambda e: self.delete_course(course_id)),
+                    ft.ElevatedButton("Não, Voltar", on_click=self.create_course_page),
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                spacing=20,
+            )
+        )
+
+    def delete_course(self, course_id):
+        """Exclui um curso do banco de dados"""
+        if self.database.delete_course(course_id):
+            self.create_course_page()  # Atualiza a lista de cursos após exclusão
+        else:
+            # Exibe erro ou mensagem de falha
+            pass
+
     def go_back(self, e):
-        """Retorna à página anterior"""
-        self.page.go("/dashboard")
+        """Volta para o painel da instituição"""
+        from .dashboard import DashboardPage
+        DashboardPage(self.page, user_type="institution", institution_id=self.institution_id)

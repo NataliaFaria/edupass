@@ -5,6 +5,7 @@ from .document_upload_page import DocumentUploadPage
 from .manage_students import ManageStudentsPage
 from .document_status_page import DocumentStatusPage
 from .manage_document import ManageDocumentPage
+from .course_page import CoursesPage
 from database import Database
 
 class DashboardPage:
@@ -13,6 +14,8 @@ class DashboardPage:
         self.user_type = user_type
         self.student_id = student_id
         self.institution_id = institution_id
+        self.database = Database()
+        
         self.create_dashboard()
 
     def create_dashboard(self):
@@ -25,7 +28,7 @@ class DashboardPage:
                     ft.Text("Bem-vindo ao painel da Instituição!", size=30),
                     ft.TextButton("Gerenciar Alunos", on_click=self.navigate_to_manage_student),
                     ft.TextButton("Cadastrar Curso", on_click=self.navigate_to_course_registration),  # Novo botão para registrar cursos
-                    ft.TextButton("Ver Cursos Cadastrados", on_click=self.show_courses),  # Novo botão para visualizar cursos
+                    ft.TextButton("Ver Cursos Cadastrados", on_click=self.navigate_to_courses),  # Novo botão para visualizar cursos
                     # ft.TextButton("Visualizar Relatórios", on_click=lambda e: self.page.add(ft.Text("Funcionalidade de Relatórios"))),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
@@ -55,63 +58,13 @@ class DashboardPage:
         )
     
     def navigate_to_course_registration(self, e):
-        # Navegar para a página de registro de cursos
-        CourseRegistrationPage(self.page, self)
+        """Navega para a página de registro de cursos"""
+        self.page.clean()  # Limpa a página atual antes de navegar para a próxima
+        CourseRegistrationPage(self.page, self)  # Passa a instância de DashboardPage para o CourseRegistrationPage
 
-    def show_courses(self, e):
-        database = Database()  # Instância do banco de dados
 
-        # Verificar se o ID da instituição está disponível
-        if not self.institution_id:
-            self.page.clean()
-            self.page.add(
-                ft.Text("Erro: ID da instituição não encontrado.", color="red", size=20)
-            )
-            return
-
-        # Buscar cursos cadastrados pela instituição logada
-        courses = database.get_courses_by_institution(self.institution_id)
-
-        # Verificar se existem cursos cadastrados
-        if not courses:
-            self.page.clean()
-            self.page.add(
-                ft.Column(
-                    controls=[
-                        ft.Text("Nenhum curso cadastrado.", size=20, color="red"),
-                        ft.TextButton("Voltar ao Painel", on_click=lambda e: self.create_dashboard()),
-                    ],
-                    alignment=ft.MainAxisAlignment.CENTER,
-                )
-            )
-            return
-
-        # Criar lista visual dos cursos
-        course_list = ft.ListView(
-            controls=[
-                ft.ListTile(
-                    leading=ft.Icon(ft.icons.BOOK),
-                    title=ft.Text(course["name"]),
-                    subtitle=ft.Text(f"Duração: {course['duration']}"),
-                )
-                for course in courses
-            ],
-            spacing=10,
-        )
-
-        # Exibir a lista de cursos
-        self.page.clean()
-        self.page.add(
-            ft.Column(
-                controls=[
-                    ft.Text("Cursos Cadastrados", size=30),
-                    course_list,
-                    ft.TextButton("Voltar ao Painel", on_click=lambda e: self.create_dashboard()),
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,
-                spacing=20,
-            )
-        )
+    def navigate_to_courses(self, e):
+        CoursesPage(self.page, self, self.database)
 
 
     def show_student_card(self, e):
