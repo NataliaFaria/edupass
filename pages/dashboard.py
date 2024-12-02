@@ -6,6 +6,7 @@ from .manage_students import ManageStudentsPage
 from .document_status_page import DocumentStatusPage
 from .manage_document import ManageDocumentPage
 from .course_page import CoursesPage
+from components.botao import Botao, BotaoTexto, BotaoGeneros
 from database import Database
 
 class DashboardPage:
@@ -15,7 +16,7 @@ class DashboardPage:
         self.student_id = student_id
         self.institution_id = institution_id
         self.database = Database()
-        
+
         self.create_dashboard()
 
     def create_dashboard(self):
@@ -26,10 +27,9 @@ class DashboardPage:
             content = ft.Column(
                 controls=[
                     ft.Text("Bem-vindo ao painel da Instituição!", size=30),
-                    ft.TextButton("Gerenciar Alunos", on_click=self.navigate_to_manage_student),
-                    ft.TextButton("Cadastrar Curso", on_click=self.navigate_to_course_registration),  # Novo botão para registrar cursos
-                    ft.TextButton("Ver Cursos Cadastrados", on_click=self.navigate_to_courses),  # Novo botão para visualizar cursos
-                    # ft.TextButton("Visualizar Relatórios", on_click=lambda e: self.page.add(ft.Text("Funcionalidade de Relatórios"))),
+                    Botao("Gerenciar Alunos", self.navigate_to_manage_student),
+                    Botao("Cadastrar Curso", self.navigate_to_course_registration),
+                    Botao("Ver Cursos Cadastrados", self.navigate_to_courses),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 spacing=20,
@@ -38,16 +38,16 @@ class DashboardPage:
             content = ft.Column(
                 controls=[
                     ft.Text("Bem-vindo ao painel do Aluno!", size=30),
-                    # ft.TextButton("Meus Cursos", on_click=lambda e: self.page.add(ft.Text("Lista de Cursos Inscritos"))),
-                    ft.TextButton("Adicionar documentos", on_click=self.navigate_to_document_upload),
-                    ft.TextButton("Status", on_click=self.navigate_to_document_status),
-                    ft.TextButton("Ver Minha Carteirinha", on_click=self.show_student_card),
+                    Botao("Adicionar documentos", self.navigate_to_document_upload),
+                    Botao("Status", self.navigate_to_document_status),
+                    Botao("Ver Minha Carteirinha", self.show_student_card),
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 spacing=20,
             )
 
-        home_button = ft.TextButton("Logout", on_click=lambda e: self.page.go("/"))
+        home_button = Botao("Logout", lambda e: self.page.go("/"))
+
 
         self.page.add(
             ft.Column(
