@@ -74,7 +74,9 @@ class ManageStudentsPage:
         )
 
     def go_back(self, e):
-        self.page.go("/dashboard")
+        from .dashboard import DashboardPage  # Certifique-se de que o caminho está correto
+        DashboardPage(self.page, user_type="institution", institution_id=self.institution_id)
+
 
     def go_to_manage_documents(self, student_id):
         """Abre a página de gerenciamento de documentos do aluno"""
