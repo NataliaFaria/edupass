@@ -6,3 +6,9 @@ https://www.figma.com/design/mTS9Qwg0S9ptNX1BCJcCn7/edupass---mapa-navega%C3%A7%
 
 Diagrama de classes:
 https://drive.google.com/file/d/1h62RqP6LF_3Tczk88TUHFNfIuMLGsGJ1/view?usp=sharing
+
+Relatório:
+https://docs.google.com/document/d/1HeTnPvP7xYbdW5nVg_uVIeBnE0c39WFiBSj5-a_S6S4/edit?usp=sharing
+
+Diagrama Entidade Relacionamento:
+https://drive.google.com/file/d/1cA8S5RhmAndDYXD09PLkentH4EOO5xdW/view?usp=sharing
