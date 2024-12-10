@@ -31,7 +31,7 @@ class ManageDocumentPage:
             )
             return
 
-        # Gerar lista de documentos com opções de download e alteração de status
+        #lista de documentos
         document_list = ft.ListView(
             controls=[
                 ft.Column(
@@ -82,7 +82,7 @@ class ManageDocumentPage:
     def download_document(self, file_path):
         """Abre o documento com o aplicativo associado ao tipo de arquivo"""
         try:
-            absolute_path = os.path.abspath(file_path)  # Caminho absoluto
+            absolute_path = os.path.abspath(file_path)
             if os.path.exists(absolute_path):
                 os.startfile(absolute_path)  # Abre o arquivo com o programa associado
             else:

@@ -5,14 +5,14 @@ from .dashboard import DashboardPage
 class StudentLoginPage:
     def __init__(self, page: ft.Page, on_login=None):
         self.page = page
-        self.on_login = on_login  # Armazena a função de login
-        self.database = Database()  # Inicializa o banco de dados
+        self.on_login = on_login  
+        self.database = Database()  
         self.page.title = "Login - Aluno"
         self.page.clean()
         self.create_login_page()
 
-    def login(self, e):  # Método de instância com o parâmetro 'e'
-        # Acessa os valores dos campos de entrada diretamente
+    def login(self, e):
+        
         email = self.email_field_ref.current.value.strip()
         password = self.password_field_ref.current.value.strip()
 
@@ -40,7 +40,7 @@ class StudentLoginPage:
                 self.page.add(ft.Text("Email ou senha incorretos!", color=ft.colors.RED))
 
     def create_login_page(self):
-        # Cria referências para os campos de entrada
+        
         self.email_field_ref = ft.Ref()
         self.password_field_ref = ft.Ref()
 
@@ -59,7 +59,7 @@ class StudentLoginPage:
                     ft.Text("Login - Aluno", size=30),
                     email_input,
                     password_input,
-                    ft.ElevatedButton("Entrar", on_click=self.login),  # Aqui, chamamos o método de instância
+                    ft.ElevatedButton("Entrar", on_click=self.login),
                     ft.TextButton("Cadastrar aluno", on_click=navigate_to_student_registration),
                     ft.TextButton("Voltar para Home", on_click=navigate_to_home)
                 ],

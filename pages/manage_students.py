@@ -20,7 +20,7 @@ class ManageStudentsPage:
         for student in students:
             unique_students[student["student_id"]] = student  # 'student_id' como chave única
 
-        # Agora 'unique_students' contém apenas alunos únicos
+        # unique_students contém apenas alunos únicos
         unique_students_list = list(unique_students.values())
 
         if not unique_students_list:
@@ -74,7 +74,7 @@ class ManageStudentsPage:
         )
 
     def go_back(self, e):
-        from .dashboard import DashboardPage  # Certifique-se de que o caminho está correto
+        from .dashboard import DashboardPage
         DashboardPage(self.page, user_type="institution", institution_id=self.institution_id)
 
 

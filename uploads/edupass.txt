@@ -1,28 +1,4 @@
-Cadastro Aluno:
-Nome
-E-mail
-Data de nascimento
-CPF
-Telefone
-Endereço residencial
 
-Pendente: Confirmação do e-mail
-
-Cadastro Instituição:
-Nome
-Endereço
-Turno
-Cursos ofertados
-
-
-Carteirinha:
-Nome
-Foto
-Curso
-Data de Matrícula
-
-Edição e exclusão de curso para instituição - Pendente
-Instituição baixar documentos - Pendente
-Integrar componente - Pendente
-Listar curso para aluno - Pendente
-Edição e exclusão de curso para aluno - Pendente
+Rodar testes
+python -m unittest tests/test_database.py
+python -m unittest tests.test_student_card_page

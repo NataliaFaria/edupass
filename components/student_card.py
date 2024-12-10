@@ -14,7 +14,7 @@ class StudentCardPage:
 
     def go_back(self, e):
         # Retorna ao painel de controle
-        self.dashboard.create_dashboard()  # Chama o método do DashboardPage
+        self.dashboard.create_dashboard()
         self.page.update()
 
     def generate_qr_code_base64(self, student_data, status):
@@ -37,11 +37,11 @@ class StudentCardPage:
 
     def get_student_status(self, student_id):
         """Verifica os documentos do estudante e determina o status"""
-        documents = self.db.get_documents_for_student(student_id)  # Assume que a função retorna os documentos do estudante
+        documents = self.db.get_documents_for_student(student_id)
         if documents:
             for doc in documents:
-                # Acessando o status pelo índice correto da tupla
-                status = doc[6]  # O status está no índice 6, conforme a estrutura que você passou
+                
+                status = doc[6]
                 if status == "Reprovado" or status == "Pendente":  # Se algum documento for reprovado, o status será reprovado
                     return "Reprovado"
             return "Aprovado"  # Se todos os documentos estiverem aprovados
@@ -50,9 +50,9 @@ class StudentCardPage:
 
 
     def show_student_card(self):
-        student_data = self.db.get_student_by_id(self.student_id)  # Obtém os dados do aluno
+        student_data = self.db.get_student_by_id(self.student_id)
         
-        self.page.clean()  # Limpa a página atual
+        self.page.clean()
 
         if student_data:
             # Verifica o status do aluno baseado nos documentos
@@ -69,9 +69,9 @@ class StudentCardPage:
                         # ft.Text(f"ID: {student_data['id']}", size=24),
                         ft.Text(f"Nome: {student_data['name']}", size=24),
                         ft.Text(f"E-mail: {student_data['email']}", size=24),
-                        ft.Text(f"Status: {status}", size=24),  # Exibe o status
+                        ft.Text(f"Status: {status}", size=24),
                         ft.Image(
-                            src_base64=qr_code_base64,  # Exibe a imagem base64 diretamente
+                            src_base64=qr_code_base64,
                             width=200,
                             height=200,
                         ),

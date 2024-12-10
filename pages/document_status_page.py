@@ -29,7 +29,7 @@ class DocumentStatusPage:
             )
             return
 
-        # Criar lista de documentos com status
+        # Cria lista de documentos com status
         document_list = ft.ListView(
             controls=[
                 ft.ListTile(

@@ -2,21 +2,23 @@ import flet as ft
 from database import Database
 
 class CourseRegistrationPage:
-    def __init__(self, page: ft.Page, dashboard_page: object):
+    def __init__(self, page: ft.Page, dashboard_page: object, institution_id: int):
         self.page = page
-        self.dashboard = dashboard_page  # Referência ao DashboardPage
+        self.dashboard = dashboard_page
         self.page.clean()
         self.page.title = "Cadastro de Cursos"
         self.database = Database()
+        self.institution_id = institution_id
 
         self.create_course_registration_page()
 
     def create_course_registration_page(self):
-        # Campos do formulário
+        # Campos de entrada
         self.course_name_field = ft.TextField(label="Nome do Curso")
         self.course_description_field = ft.TextField(label="Descrição do Curso")
         self.course_duration_field = ft.TextField(label="Duração (ex: 6 meses)")
 
+        # Mensagens de feedback
         self.success_message = ft.Text("", size=20, color=ft.colors.GREEN)
         self.error_message = ft.Text("", size=20, color=ft.colors.RED)
 
@@ -30,16 +32,15 @@ class CourseRegistrationPage:
             course_name = self.course_name_field.value
             course_description = self.course_description_field.value
             course_duration = self.course_duration_field.value
-            
-            institution_id = 1  # Exemplo de ID fixo da instituição
-            
+
             if not course_name or not course_description or not course_duration:
                 self.success_message.value = ""
                 self.error_message.value = "Todos os campos devem ser preenchidos!"
                 self.page.update()
                 return
 
-            if self.database.register_course(course_name, institution_id, course_duration):
+            # Usa o ID da instituição logada
+            if self.database.register_course(course_name, self.institution_id, course_duration):
                 self.course_name_field.value = ""
                 self.course_description_field.value = ""
                 self.course_duration_field.value = ""

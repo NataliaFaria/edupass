@@ -1,7 +1,7 @@
 import flet as ft
 import os
 from database import Database
-import shutil  # Para copiar o arquivo
+import shutil
 
 class DocumentUploadPage:
     def __init__(self, page: ft.Page, student_id: int, dashboard_page: object):
@@ -16,14 +16,11 @@ class DocumentUploadPage:
         self.page.clean()
         self.page.title = "Upload de Documentos"
 
-        # Texto explicativo para o campo de upload de arquivo
         file_picker_label = ft.Text("Escolha o arquivo para upload", size=20)
 
-        # Campo para selecionar o arquivo (agora está sendo adicionado na sobreposição)
         self.file_picker = ft.FilePicker(on_result=self.handle_file_pick)
         self.page.overlay.append(self.file_picker)
 
-        # Campo para descrição do documento
         description_field = ft.TextField(label="Descrição do Documento", multiline=True)
 
         # Função para upload do documento
@@ -36,10 +33,10 @@ class DocumentUploadPage:
                 self.page.add(ft.Text("Por favor, insira uma descrição para o documento.", color="red"))
                 return
 
-            # Definir o caminho do arquivo
+            #caminho do arquivo
             file_path = f"uploads/{self.selected_file.name}"
 
-            # Verificar se o diretório "uploads" existe, se não, criar
+            # Verifica se o diretório "uploads" existe, se não, cria
             if not os.path.exists('uploads'):
                 os.makedirs('uploads')
 
@@ -64,8 +61,8 @@ class DocumentUploadPage:
             ft.Column(
                 controls=[
                     ft.Text("Upload de Documentos", size=30),
-                    file_picker_label,  # Exibe o texto de instrução
-                    description_field,  # Campo de descrição
+                    file_picker_label,  
+                    description_field, 
                     ft.ElevatedButton("Escolher Arquivo", on_click=lambda _: self.file_picker.pick_files()),
                     ft.ElevatedButton("Enviar Documento", on_click=upload_document),
                     ft.TextButton("Voltar ao Painel", on_click=self.go_back),
@@ -79,8 +76,8 @@ class DocumentUploadPage:
         self.page.update()
 
     def go_back(self, e):
-        # Retorna ao painel de controle
-        self.dashboard.create_dashboard()  # Chama o método do DashboardPage
+        
+        self.dashboard.create_dashboard()
         self.page.update()
 
 

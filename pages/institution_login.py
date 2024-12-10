@@ -29,7 +29,7 @@ class InstitutionLoginPage:
                 institution_id = self.database.get_institution_id_by_email(email)
 
                 if institution_id:
-                    # Redirecionar para o painel de controle da instituição, passando o ID
+                    #Redireciona para o painel de controle da instituição, passando o ID
                     DashboardPage(self.page, user_type="institution", institution_id=institution_id)
                 else:
                     self.page.add(ft.Text("Instituição não encontrada.", color=ft.colors.RED))

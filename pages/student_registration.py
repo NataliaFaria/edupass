@@ -14,7 +14,7 @@ class StudentRegistrationPage:
         self.create_registration_page()
 
     def create_registration_page(self):
-        # Campos adicionais para o formulário
+       
         name_field = ft.TextField(label="Nome do Aluno")
         email_field = ft.TextField(label="Email")
         dob_field = ft.TextField(label="Data de Nascimento (DD/MM/AAAA)")
@@ -23,7 +23,6 @@ class StudentRegistrationPage:
         address_field = ft.TextField(label="Endereço Residencial")
         password_field = ft.TextField(label="Senha", password=True)
 
-        # Campos de instituição e curso
         institution_dropdown = ft.Dropdown(label="Instituição")
         course_dropdown = ft.Dropdown(label="Curso")
 
@@ -70,7 +69,6 @@ class StudentRegistrationPage:
 
         def register(e):
             """Realiza o registro do aluno"""
-            # Resetando mensagens de erro
             name_field.error_text = None
             email_field.error_text = None
             dob_field.error_text = None

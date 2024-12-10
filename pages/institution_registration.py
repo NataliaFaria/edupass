@@ -12,7 +12,7 @@ class InstitutionRegistrationPage:
         self.create_registration_page()
 
     def create_registration_page(self):
-        # Campos do formulário
+        
         name_field = ft.TextField(label="Nome da Instituição")
         address_field = ft.TextField(label="Endereço")
         shift_field = ft.TextField(label="Turno (Ex: Matutino, Vespertino, Noturno)")
@@ -31,14 +31,13 @@ class InstitutionRegistrationPage:
 
         def register(e):
             """Realiza o registro da instituição."""
-            # Resetar mensagens de erro
+            
             name_field.error_text = None
             address_field.error_text = None
             shift_field.error_text = None
             email_field.error_text = None
             password_field.error_text = None
 
-            # Obter os valores dos campos
             name = name_field.value.strip()
             address = address_field.value.strip()
             shift = shift_field.value.strip()

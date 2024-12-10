@@ -59,8 +59,8 @@ class DashboardPage:
     
     def navigate_to_course_registration(self, e):
         """Navega para a página de registro de cursos"""
-        self.page.clean()  # Limpa a página atual antes de navegar para a próxima
-        CourseRegistrationPage(self.page, self)  # Passa a instância de DashboardPage para o CourseRegistrationPage
+        self.page.clean()
+        CourseRegistrationPage(self.page, self, self.institution_id)
 
 
     def navigate_to_courses(self, e):
@@ -70,8 +70,8 @@ class DashboardPage:
     def show_student_card(self, e):
         if self.student_id is not None:
             # Navegar para a página da carteirinha
-            self.page.clean()  # Limpa a página atual antes de navegar para a próxima
-            StudentCardPage(self.page, self.student_id, self)  # Passa a instância de DashboardPage para o StudentCardPage
+            self.page.clean()
+            StudentCardPage(self.page, self.student_id, self)
         else:
             self.page.add(ft.Text("ID do aluno não disponível.", color="red"))
 
